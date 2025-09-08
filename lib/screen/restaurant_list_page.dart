@@ -1,56 +1,110 @@
 import 'package:flutter/material.dart';
+import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
-import '../providers/restaurant_provider.dart';
-import '../providers/result_state.dart';
-import '../widgets/restaurant_card.dart';
-import '../screen/restaurant_detail_page.dart';
+import 'package:restaurant_submit/providers/restaurant_list_provider.dart';
+import 'package:restaurant_submit/providers/theme_provider.dart';
+import 'package:restaurant_submit/states/result_state.dart';
+import 'package:restaurant_submit/widgets/restaurant_card.dart';
 
-class RestaurantListPage extends StatelessWidget {
+class RestaurantListPage extends StatefulWidget {
   const RestaurantListPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final provider = Provider.of<RestaurantProvider>(context);
+  State<RestaurantListPage> createState() => _RestaurantListPageState();
+}
 
+class _RestaurantListPageState extends State<RestaurantListPage> {
+  @override
+  //initState
+  void initState() {
+    //panggil state sekalisetelah widget ter-mount
+    super.initState();
+    //pakai addPostFrameCallBack,kalau pakai microtask harus check if mounted
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<RestaurantListProvider>().fetchAllRestaurants();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final themeProvider = context.watch<ThemeProvider>();
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Restaurant'),
+        title: Text('Restaurant'),
         actions: [
           IconButton(
-            icon: const Icon(Icons.brightness_6),
-            onPressed: () => provider.toggleTheme(),
+            onPressed: () => context.read<ThemeProvider>().toggleTheme(),
+            icon: Icon(
+              themeProvider.isDarkMode ? Icons.dark_mode : Icons.light_mode,
+            ),
+          ),
+          IconButton(
+            onPressed: () => Navigator.pushNamed(context, '/search'),
+            icon: Icon(Icons.search),
           ),
         ],
       ),
-      body: Builder(
-        builder: (_) {
+      //halaman page ini refer pada smua state di Restaurant Provider
+      body: Consumer<RestaurantListProvider>(
+        builder: (context, provider, _) {
           switch (provider.state) {
             case ResultState.loading:
-              return const Center(child: CircularProgressIndicator());
+              return Center(
+                child: Lottie.asset(
+                  'assets/animations/loading.json',
+                  width: 140,
+                ),
+              );
             case ResultState.success:
-              return ListView.builder(
-                itemCount: provider.restaurants.length,
-                itemBuilder: (context, index) {
-                  final restaurant = provider.restaurants[index];
-                  return RestaurantCard(
-                    restaurant: restaurant,
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) =>
-                              RestaurantDetailPage(id: restaurant.id),
-                        ),
-                      );
-                    },
-                  );
-                },
+              return RefreshIndicator(
+                child: ListView.builder(
+                  itemCount: provider.restaurants.length,
+                  itemBuilder: (context, index) {
+                    final r = provider.restaurants[index];
+                    return RestaurantCard(
+                      restaurant: r,
+                      onTap: () {
+                        Navigator.pushNamed(context, '/detail/${r.id}');
+                      },
+                    );
+                  },
+                ),
+                onRefresh: () => provider.fetchAllRestaurants(),
               );
             case ResultState.error:
-              return const Center(child: Text('Failed to fetch data.'));
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Lottie.asset('assets/animations/error.json', width: 180),
+                    const SizedBox(height: 12),
+                    Text(
+                      provider.errorMessage != null &&
+                              provider.errorMessage!.isNotEmpty
+                          ? provider.errorMessage!
+                          : 'Failed to Fetch Data',
+                    ),
+                  ],
+                ),
+              );
           }
         },
       ),
     );
   }
 }
+
+
+/*CATATAN :
+kalau pakai microtask harus ada if mounted  apakah frame pertama udah jalan?
+jika tidak ada maka akan ada warning ,solusi pakai frameCallback biar lebih aman dan rapi
+
+ Future.microtask(() {
+    if (mounted) {
+      context.read<RestaurantListProvider>().fetchAllRestaurants();
+    }
+  });
+
+
+
+*/

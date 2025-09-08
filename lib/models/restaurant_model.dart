@@ -32,18 +32,6 @@ class Restaurant {
 //...............
 
 class RestaurantListResponse {
-  //old script!
-  // final List<Restaurant> restaurants;
-
-  // RestaurantListResponse({required this.restaurants});
-
-  // factory RestaurantListResponse.fromJson(Map<String, dynamic> json) =>
-  //     RestaurantListResponse(
-  //       restaurants: List<Restaurant>.from(
-  //         json['restaurants'].map((x) => Restaurant.fromJson(x)),
-  //       ),
-  //     );
-
   final bool error;
   final String message;
   final int count;

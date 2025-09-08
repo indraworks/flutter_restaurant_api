@@ -16,11 +16,16 @@ class RestaurantCard extends StatelessWidget {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: ListTile(
-        leading: Image.network(
-          'https://restaurant-api.dicoding.dev/images/small/${restaurant.pictureId}',
-          width: 60,
-          height: 60,
-          fit: BoxFit.cover,
+        leading: ClipRRect(
+          //image network bungkus dgn clipRect!
+          child: Image.network(
+            'https://restaurant-api.dicoding.dev/images/small/${restaurant.pictureId}',
+            width: 60,
+            height: 60,
+            fit: BoxFit.cover,
+            errorBuilder: (context, error, stackTrace) =>
+                Container(width: 68, height: 68, color: Colors.grey[200]),
+          ),
         ),
         title: Text(restaurant.name),
         subtitle: Column(

@@ -1,12 +1,27 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:restaurant_submit/providers/restaurant_provider.dart';
+import 'package:restaurant_submit/providers/restaurant_detail_provider.dart';
+import 'package:restaurant_submit/providers/restaurant_list_provider.dart';
+import 'package:restaurant_submit/providers/theme_provider.dart';
+import 'package:restaurant_submit/screen/restaurant_detail_page.dart';
+import 'package:restaurant_submit/screen/restaurant_list_page.dart';
+import 'package:restaurant_submit/screen/restaurant_search_page.dart';
+
 import 'package:restaurant_submit/themes/app_theme.dart';
 
-import 'package:restaurant_submit/screen/restaurant_list_page.dart';
-
 void main() {
-  runApp(const MyApp());
+  //Multiprovider declare & wraping
+
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => RestaurantListProvider()),
+        ChangeNotifierProvider(create: (_) => RestaurantDetailProvider()),
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -14,19 +29,49 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => RestaurantProvider(),
-      child: Consumer<RestaurantProvider>(
-        builder: (context, provider, _) {
-          return MaterialApp(
-            title: 'Restaurant App',
-            theme: AppTheme.lightTheme,
-            darkTheme: AppTheme.darkTheme,
-            themeMode: provider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-            home: const RestaurantListPage(),
-          );
-        },
-      ),
+    //returnnya pilih consumer saja lebih ok!
+    return Consumer<ThemeProvider>(
+      builder: (context, provider, _) {
+        return MaterialApp(
+          title: 'Restaurant App',
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: provider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+          initialRoute: '/',
+          onGenerateRoute: (settings) {
+            final name = settings.name ?? '';
+            //Home
+            if (name == '/' || name == '') {
+              return MaterialPageRoute(
+                builder: (_) => const RestaurantListPage(),
+              );
+            }
+
+            //Search Page
+            if (name == '/search') {
+              return MaterialPageRoute(
+                builder: (_) => const RestaurantSearchPage(),
+              );
+            }
+
+            //Detail Page with Path '/detail/:id
+            if (name.startsWith('/detail/')) {
+              final id = name.split('/').last;
+              return MaterialPageRoute(
+                builder: (_) => RestaurantDetailPage(id: id),
+              );
+            }
+
+            //fallback
+            return MaterialPageRoute(
+              builder: (_) => Scaffold(
+                appBar: AppBar(title: const Text('Unknown route')),
+                body: Center(child: Text('No route defined for $name !')),
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }
