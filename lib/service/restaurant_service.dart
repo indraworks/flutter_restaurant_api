@@ -37,5 +37,20 @@ class RestaurantService {
       );
     }
   }
+  //search :GET https://restaurant-api.dicoding.dev/search?q={query}
+
+  Future<List<Restaurant>> searchRestaurants(String query) async {
+    final uri = Uri.parse('$_baseUrl/search?q=$query');
+    //10 detik utk amanya !
+    final response = await http.get(uri).timeout(const Duration(seconds: 10));
+    if (response.statusCode == 200) {
+      return RestaurantListResponse.fromJson(
+        json.decode(response.body),
+      ).restaurants;
+    } else {
+      throw Exception(
+        'Failed to Search Restaurant (code ${response.statusCode})',
+      );
+    }
+  }
 }
-//note restaurant DEtail response coba cek sudah benarkah?

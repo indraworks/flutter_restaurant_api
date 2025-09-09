@@ -53,6 +53,7 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
                 child: Lottie.asset(
                   'assets/animations/loading.json',
                   width: 140,
+                  height: 140,
                 ),
               );
             case ResultState.success:

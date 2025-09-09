@@ -4,7 +4,6 @@ import 'package:lottie/lottie.dart';
 
 import '../providers/restaurant_detail_provider.dart';
 import '../states/result_state.dart';
-import '../utils/error_handler.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
   final String id;
@@ -22,11 +21,10 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    Future.microtask(() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
-        () => context.read<RestaurantDetailProvider>().fetchRestaurantDetail(
+        context.read<RestaurantDetailProvider>().fetchRestaurantDetail(
           widget.id,
         );
       }
@@ -53,29 +51,71 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                 child: Lottie.asset(
                   'assets/animations/loading.json',
                   width: 120,
+                  height: 120,
                 ),
               );
             case ResultState.success:
-              final restaurant = provider.restaurantDetail!;
-
+              final detail = provider.restaurantDetail!;
               return SingleChildScrollView(
-                padding: EdgeInsets.all(16),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Image.network(
-                      "https://restaurant-api.dicoding.dev/images/medium/${restaurant.pictureId}",
+                      "https://restaurant-api.dicoding.dev/images/large/${detail.pictureId}",
+                      width: double.infinity,
+                      height: 200,
+                      fit: BoxFit.cover,
                     ),
-                    const SizedBox(height: 12),
-                    Text(
-                      restaurant.name,
-                      style: Theme.of(context).textTheme.headlineSmall,
+                    Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            detail.name,
+                            style: Theme.of(context).textTheme.headlineSmall,
+                          ),
+                          const SizedBox(height: 4),
+                          Text("${detail.city}, ${detail.address}"),
+                          const SizedBox(height: 8),
+                          Row(
+                            children: [
+                              const Icon(
+                                Icons.star,
+                                color: Colors.amber,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 4),
+                              Text("${detail.rating}"),
+                            ],
+                          ),
+                          const SizedBox(height: 16),
+                          Text(detail.description),
+                          const SizedBox(height: 16),
+                          Text(
+                            "Menu Makanan",
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          Wrap(
+                            spacing: 8,
+                            children: detail.foods
+                                .map((f) => Chip(label: Text(f)))
+                                .toList(),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            "Minuman",
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          Wrap(
+                            spacing: 8,
+                            children: detail.drinks
+                                .map((d) => Chip(label: Text(d)))
+                                .toList(),
+                          ),
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 8),
-                    Text("City: ${restaurant.city}"),
-                    const SizedBox(height: 8),
-                    Text("Rating: ${restaurant.rating}"),
-                    const SizedBox(height: 12),
-                    Text(restaurant.description, textAlign: TextAlign.justify),
                   ],
                 ),
               );
@@ -84,13 +124,22 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Lottie.asset('assets/animations/error.json', width: 180),
+                    Lottie.asset(
+                      'assets/animations/error.json',
+                      width: 180,
+                      height: 180,
+                    ),
                     const SizedBox(height: 12),
                     Text(
                       provider.errorMessage != null &&
                               provider.errorMessage!.isNotEmpty
                           ? provider.errorMessage!
                           : 'Failed to Fetch Data',
+                    ),
+                    ElevatedButton(
+                      onPressed: () =>
+                          provider.fetchRestaurantDetail(widget.id),
+                      child: Text('Retry'),
                     ),
                   ],
                 ),

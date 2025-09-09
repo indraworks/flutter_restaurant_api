@@ -6,6 +6,7 @@ import 'package:restaurant_submit/providers/theme_provider.dart';
 import 'package:restaurant_submit/screen/restaurant_detail_page.dart';
 import 'package:restaurant_submit/screen/restaurant_list_page.dart';
 import 'package:restaurant_submit/screen/restaurant_search_page.dart';
+import 'package:restaurant_submit/providers/restaurant_search_provider.dart';
 
 import 'package:restaurant_submit/themes/app_theme.dart';
 
@@ -18,6 +19,7 @@ void main() {
         ChangeNotifierProvider(create: (_) => RestaurantListProvider()),
         ChangeNotifierProvider(create: (_) => RestaurantDetailProvider()),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => RestaurantSearchProvider()),
       ],
       child: MyApp(),
     ),
