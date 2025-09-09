@@ -1,9 +1,9 @@
 class Restaurant {
   final String id;
-  final String? name;
-  final String? description;
-  final String? pictureId;
-  final String? city;
+  final String name;
+  final String description;
+  final String pictureId;
+  final String city;
   final double rating;
 
   Restaurant({
@@ -15,13 +15,14 @@ class Restaurant {
     required this.rating,
   });
 
+  //check null string pada factory
   factory Restaurant.fromJson(Map<String, dynamic> json) => Restaurant(
-    id: json['id'] ?? '',
+    id: json['id']?.toString() ?? '',
     name: json['name'] ?? '',
-    description: json['description'],
-    pictureId: json['pictureId'],
-    city: json['city'],
-    rating: (json['rating'] != null) ? (json['rating'] as num).toDouble() : 0.0,
+    description: json['description'] ?? '',
+    pictureId: json['pictureId'] ?? '',
+    city: json['city'] ?? '',
+    rating: (json['rating'] is num) ? (json['rating'] as num).toDouble() : 0.0,
   );
 }
 
@@ -46,12 +47,14 @@ class RestaurantListResponse {
 
   factory RestaurantListResponse.fromJson(Map<String, dynamic> json) {
     return RestaurantListResponse(
-      error: json['error'],
-      message: json['message'],
-      count: json['count'],
-      restaurants: List<Restaurant>.from(
-        json['restaurants'].map((x) => Restaurant.fromJson(x)),
-      ),
+      error: json['error'] ?? true,
+      message: json['message'] ?? 'Unknown Error',
+      count: json['count'] ?? 0,
+      restaurants:
+          (json['restaurants'] as List<dynamic>?)
+              ?.map((x) => Restaurant.fromJson(x))
+              .toList() ??
+          [],
     );
   }
 }
