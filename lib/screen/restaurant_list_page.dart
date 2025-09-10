@@ -5,6 +5,7 @@ import 'package:restaurant_submit/providers/restaurant_list_provider.dart';
 import 'package:restaurant_submit/providers/theme_provider.dart';
 import 'package:restaurant_submit/states/result_state.dart';
 import 'package:restaurant_submit/widgets/restaurant_card.dart';
+import 'package:restaurant_submit/utils/app_routes.dart';
 
 class RestaurantListPage extends StatefulWidget {
   const RestaurantListPage({super.key});
@@ -39,7 +40,7 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
             ),
           ),
           IconButton(
-            onPressed: () => Navigator.pushNamed(context, '/search'),
+            onPressed: () => Navigator.pushNamed(context, AppRoutes.search),
             icon: Icon(Icons.search),
           ),
         ],
@@ -65,7 +66,7 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
                     return RestaurantCard(
                       restaurant: r,
                       onTap: () {
-                        Navigator.pushNamed(context, '/detail/${r.id}');
+                        Navigator.pushNamed(context, AppRoutes.detail);
                       },
                     );
                   },

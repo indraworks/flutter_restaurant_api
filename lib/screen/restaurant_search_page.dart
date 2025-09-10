@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
+import 'package:restaurant_submit/utils/app_routes.dart';
 
 import '../providers/restaurant_search_provider.dart';
 import '../widgets/restaurant_card.dart';
@@ -80,7 +81,7 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
                           return RestaurantCard(
                             restaurant: r,
                             onTap: () =>
-                                Navigator.pushNamed(context, '/detail/${r.id}'),
+                                Navigator.pushNamed(context, AppRoutes.detail),
                           );
                         },
                       );
