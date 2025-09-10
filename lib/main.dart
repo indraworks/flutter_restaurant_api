@@ -7,19 +7,25 @@ import 'package:restaurant_submit/screen/restaurant_detail_page.dart';
 import 'package:restaurant_submit/screen/restaurant_list_page.dart';
 import 'package:restaurant_submit/screen/restaurant_search_page.dart';
 import 'package:restaurant_submit/providers/restaurant_search_provider.dart';
-
+import 'package:restaurant_submit/service/restaurant_service.dart';
 import 'package:restaurant_submit/themes/app_theme.dart';
 
 void main() {
   //Multiprovider declare & wraping
-
+  final service = RestaurantService();
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => RestaurantListProvider()),
-        ChangeNotifierProvider(create: (_) => RestaurantDetailProvider()),
+        ChangeNotifierProvider(
+          create: (_) => RestaurantListProvider(service: service),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => RestaurantDetailProvider(service: service),
+        ),
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ChangeNotifierProvider(create: (_) => RestaurantSearchProvider()),
+        ChangeNotifierProvider(
+          create: (_) => RestaurantSearchProvider(service: service),
+        ),
       ],
       child: MyApp(),
     ),

@@ -61,7 +61,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Image.network(
-                      "https://restaurant-api.dicoding.dev/images/large/${detail.pictureId}",
+                      "https://restaurant-api.dicoding.dev/images/large/${detail.restaurant.pictureId}",
                       width: double.infinity,
                       height: 200,
                       fit: BoxFit.cover,
@@ -72,11 +72,13 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            detail.name,
+                            detail.restaurant.name,
                             style: Theme.of(context).textTheme.headlineSmall,
                           ),
                           const SizedBox(height: 4),
-                          Text("${detail.city}, ${detail.address}"),
+                          Text(
+                            "${detail.restaurant.city}, ${detail.restaurant.address}",
+                          ),
                           const SizedBox(height: 8),
                           Row(
                             children: [
@@ -86,11 +88,11 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                                 size: 20,
                               ),
                               const SizedBox(width: 4),
-                              Text("${detail.rating}"),
+                              Text("${detail.restaurant.rating}"),
                             ],
                           ),
                           const SizedBox(height: 16),
-                          Text(detail.description),
+                          Text(detail.restaurant.description),
                           const SizedBox(height: 16),
                           Text(
                             "Menu Makanan",
@@ -98,7 +100,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                           ),
                           Wrap(
                             spacing: 8,
-                            children: detail.foods
+                            children: detail.restaurant.foods
                                 .map((f) => Chip(label: Text(f)))
                                 .toList(),
                           ),
@@ -109,7 +111,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                           ),
                           Wrap(
                             spacing: 8,
-                            children: detail.drinks
+                            children: detail.restaurant.drinks
                                 .map((d) => Chip(label: Text(d)))
                                 .toList(),
                           ),
@@ -131,15 +133,34 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      provider.errorMessage != null &&
-                              provider.errorMessage!.isNotEmpty
-                          ? provider.errorMessage!
+                      provider.errorMessage.isNotEmpty
+                          ? provider.errorMessage
                           : 'Failed to Fetch Data',
                     ),
                     ElevatedButton(
                       onPressed: () =>
                           provider.fetchRestaurantDetail(widget.id),
                       child: Text('Retry'),
+                    ),
+                  ],
+                ),
+              );
+            case ResultState.noData:
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Lottie.asset(
+                      'assets/animations/empty_box.json',
+                      width: 150,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      provider.errorMessage.isNotEmpty
+                          ? provider.errorMessage
+                          : 'No Restaurant available',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),

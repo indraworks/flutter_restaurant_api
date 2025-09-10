@@ -26,4 +26,5 @@ flutter:
   assets:
     - assets/animations/loading.json
     - assets/animations/error.json
+    - assets/animations/empty.json
   

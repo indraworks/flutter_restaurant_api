@@ -22,40 +22,19 @@ class RestaurantDetail {
   });
 
   factory RestaurantDetail.fromJson(Map<String, dynamic> json) {
-    final menus = json['menus'];
+    final menus = json['menus'] ?? {};
     return RestaurantDetail(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
-      city: json['city'],
-      address: json['address'],
-      pictureId: json['pictureId'],
-      rating: (json['rating'] as num).toDouble(),
+      id: json['id']?.toString() ?? "",
+      name: json['name'] ?? "",
+      description: json['description'] ?? "",
+      city: json['city'] ?? "",
+      address: json['address'] ?? "",
+      pictureId: json['pictureId'] ?? "",
+      rating: (json['rating'] is num)
+          ? (json['rating'] as num).toDouble()
+          : 0.0,
       foods: List<String>.from(menus['foods'].map((item) => item['name'])),
       drinks: List<String>.from(menus['drinks'].map((item) => item['name'])),
-    );
-  }
-}
-
-// -------------------
-// Response wrapper
-// -------------------
-class RestaurantDetailResponse {
-  final bool error;
-  final String message;
-  final RestaurantDetail restaurant;
-
-  RestaurantDetailResponse({
-    required this.error,
-    required this.message,
-    required this.restaurant,
-  });
-
-  factory RestaurantDetailResponse.fromJson(Map<String, dynamic> json) {
-    return RestaurantDetailResponse(
-      error: json['error'],
-      message: json['message'],
-      restaurant: RestaurantDetail.fromJson(json['restaurant']),
     );
   }
 }

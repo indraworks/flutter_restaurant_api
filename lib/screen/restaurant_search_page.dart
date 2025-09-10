@@ -14,13 +14,7 @@ class RestaurantSearchPage extends StatefulWidget {
 }
 
 class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
-  final _controller = TextEditingController();
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
+  final TextEditingController _controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -73,15 +67,16 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
                       );
                     case ResultState.success:
                       //jika empry
-                      if (provider.results.isEmpty) {
+                      final results = provider.searchResult?.restaurants ?? [];
+                      if (results.isEmpty) {
                         return Center(
-                          child: Text('Start searching restaurants....'),
+                          child: Text('Start searching restaurant....'),
                         );
                       }
                       return ListView.builder(
-                        itemCount: provider.results.length,
+                        itemCount: results.length,
                         itemBuilder: (context, index) {
-                          final r = provider.results[index];
+                          final r = results[index];
                           return RestaurantCard(
                             restaurant: r,
                             onTap: () =>
@@ -100,9 +95,26 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
                               width: 130,
                             ),
                             const SizedBox(height: 12),
+                            Text(provider.errorMessage),
+                          ],
+                        ),
+                      );
+                    case ResultState.noData:
+                      return Center(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Lottie.asset(
+                              'assets/animations/empty.json',
+                              width: 150,
+                            ),
+                            const SizedBox(height: 12),
                             Text(
-                              provider.errorMessage ??
-                                  'Something when wrong while searching!',
+                              provider.errorMessage.isNotEmpty
+                                  ? provider.errorMessage
+                                  : 'No Restaurant available',
+                              style: Theme.of(context).textTheme.bodyMedium,
+                              textAlign: TextAlign.center,
                             ),
                           ],
                         ),

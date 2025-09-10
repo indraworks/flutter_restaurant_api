@@ -1,36 +1,45 @@
 import 'package:flutter/material.dart';
-import '../models/restaurant_model.dart';
 import '../service/restaurant_service.dart';
 import '../states/result_state.dart';
 import '../utils/error_handler.dart';
+import '../models/restaurant_list_response.dart';
 
 class RestaurantSearchProvider extends ChangeNotifier {
-  final RestaurantService _service = RestaurantService();
-  //state2
-  List<Restaurant> _results = [];
-  ResultState _state = ResultState.success;
-  String? _errorMessage;
+  final RestaurantService _service; //ini field local
+  //yg didalam kurung adlah param dari luar dimasukan
+  //supaay tak warning field local dipakai !
+  RestaurantSearchProvider({required RestaurantService service})
+    : _service = service;
 
-  //getter
-  List<Restaurant> get results => _results;
+  //intinya success brarti kosong krn blm ada yg ontap
+  ResultState _state = ResultState.success; //default idle->success kosong
   ResultState get state => _state;
-  String? get errorMessage => _errorMessage;
 
-  //cal service  searchRestaurants(String query)
-  //utk function dibawah ini kebetulan namanya sama
+  String _errorMessage = '';
+  String get errorMessage => _errorMessage;
+
+  RestaurantListResponse? _searchResult;
+  RestaurantListResponse? get searchResult => _searchResult;
+
   Future<void> searchRestaurants(String query) async {
-    if (query.isEmpty) return;
-    _state = ResultState.loading; //ambil ygloading masuk state
-    notifyListeners(); //kasih tahu ke widget search page
+    if (query.isEmpty) {
+      _state = ResultState.noData;
+      _errorMessage = "Please enter a search term";
+      notifyListeners();
+      return;
+    }
 
     try {
-      final data = await _service.searchRestaurants(query);
-      if (data.isEmpty) {
-        _state = ResultState.error;
-        _errorMessage = "No restaurants found for $query";
+      _state = ResultState.loading;
+      notifyListeners();
+      //field local dipakai agar tak warning
+      final result = await _service.searchRestaurantsResponse(query);
+      if (result.restaurants.isEmpty) {
+        _state = ResultState.noData;
+        _errorMessage = "No Restaurants found for \$query\"";
       } else {
-        _results = data;
         _state = ResultState.success;
+        _searchResult = result;
       }
     } catch (e) {
       _state = ResultState.error;
@@ -39,9 +48,11 @@ class RestaurantSearchProvider extends ChangeNotifier {
     notifyListeners(); //  selalu dipanggil
   }
 
+  //tombol clear search
   void clearSearch() {
-    _results = [];
-    _state = ResultState.success;
+    _searchResult = null;
+    _state = ResultState.success; //idle state dgn data kosong
+    _errorMessage = '';
     notifyListeners();
   }
 }

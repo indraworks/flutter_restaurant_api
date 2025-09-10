@@ -21,7 +21,7 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
     super.initState();
     //pakai addPostFrameCallBack,kalau pakai microtask harus check if mounted
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<RestaurantListProvider>().fetchAllRestaurants();
+      context.read<RestaurantListProvider>().dofetchAllRestaurants();
     });
   }
 
@@ -59,9 +59,9 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
             case ResultState.success:
               return RefreshIndicator(
                 child: ListView.builder(
-                  itemCount: provider.restaurants.length,
+                  itemCount: provider.restaurantResult.restaurants.length,
                   itemBuilder: (context, index) {
-                    final r = provider.restaurants[index];
+                    final r = provider.restaurantResult.restaurants[index];
                     return RestaurantCard(
                       restaurant: r,
                       onTap: () {
@@ -70,7 +70,7 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
                     );
                   },
                 ),
-                onRefresh: () => provider.fetchAllRestaurants(),
+                onRefresh: () => provider.dofetchAllRestaurants(),
               );
             case ResultState.error:
               return Center(
@@ -80,10 +80,29 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
                     Lottie.asset('assets/animations/error.json', width: 180),
                     const SizedBox(height: 12),
                     Text(
-                      provider.errorMessage != null &&
-                              provider.errorMessage!.isNotEmpty
-                          ? provider.errorMessage!
+                      provider.errorMessage.isNotEmpty
+                          ? provider.errorMessage
                           : 'Failed to Fetch Data',
+                    ),
+                  ],
+                ),
+              );
+            case ResultState.noData:
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Lottie.asset(
+                      'assets/animations/empty_box.json',
+                      width: 150,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      provider.errorMessage.isNotEmpty
+                          ? provider.errorMessage
+                          : 'No Restaurant available',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                      textAlign: TextAlign.center,
                     ),
                   ],
                 ),
