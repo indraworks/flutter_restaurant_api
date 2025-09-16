@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:restaurant_submit/screen/restaurant_search_page.dart';
 import '../screen/restaurant_detail_page.dart';
 import '../screen/restaurant_list_page.dart';
-import '../providers/restaurant_search_provider.dart';
 
 class AppRoutes {
   static const String home = '/';

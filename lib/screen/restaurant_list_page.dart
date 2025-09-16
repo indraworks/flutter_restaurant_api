@@ -66,7 +66,10 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
                     return RestaurantCard(
                       restaurant: r,
                       onTap: () {
-                        Navigator.pushNamed(context, AppRoutes.detail);
+                        Navigator.pushNamed(
+                          context,
+                          "${AppRoutes.detail}/${r.id}",
+                        );
                       },
                     );
                   },

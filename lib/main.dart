@@ -3,11 +3,9 @@ import 'package:provider/provider.dart';
 import 'package:restaurant_submit/providers/restaurant_detail_provider.dart';
 import 'package:restaurant_submit/providers/restaurant_list_provider.dart';
 import 'package:restaurant_submit/providers/theme_provider.dart';
-import 'package:restaurant_submit/screen/restaurant_detail_page.dart';
-import 'package:restaurant_submit/screen/restaurant_list_page.dart';
-import 'package:restaurant_submit/screen/restaurant_search_page.dart';
 import 'package:restaurant_submit/providers/restaurant_search_provider.dart';
 import 'package:restaurant_submit/service/restaurant_service.dart';
+import 'package:restaurant_submit/providers/restaurant_review_provider.dart';
 import 'package:restaurant_submit/themes/app_theme.dart';
 import 'package:restaurant_submit/utils/app_routes.dart';
 
@@ -26,6 +24,9 @@ void main() {
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(
           create: (_) => RestaurantSearchProvider(service: service),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => RestaurantReviewProvider(service: service),
         ),
       ],
       child: MyApp(),

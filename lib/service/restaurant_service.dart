@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:restaurant_submit/models/customer_review_response.dart';
 
 import 'package:restaurant_submit/models/restaurant_detail_response.dart';
 import 'package:restaurant_submit/models/restaurant_list_response.dart';
@@ -43,6 +44,26 @@ class RestaurantService {
       return RestaurantListResponse.fromJson(json.decode(response.body));
     } else {
       throw Exception('Failed to Search Restaurant )');
+    }
+  }
+
+  //untuk review response
+  Future<CustomerReviewResponse> postReview({
+    //<------------------------
+    required String restaurantId,
+    required String name,
+    required String review,
+  }) async {
+    final uri = Uri.parse('$_baseUrl/review');
+    final response = await http.post(
+      uri,
+      headers: {'Content-Type': 'application/json'},
+      body: json.encode({"id": restaurantId, "name": name, "review": review}),
+    );
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      return CustomerReviewResponse.fromJson(json.decode(response.body));
+    } else {
+      throw Exception("Failed to post revire (code ${response.statusCode})");
     }
   }
 }

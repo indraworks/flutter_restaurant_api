@@ -80,8 +80,10 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
                           final r = results[index];
                           return RestaurantCard(
                             restaurant: r,
-                            onTap: () =>
-                                Navigator.pushNamed(context, AppRoutes.detail),
+                            onTap: () => Navigator.pushNamed(
+                              context,
+                              '${AppRoutes.detail}/${r.id}',
+                            ),
                           );
                         },
                       );
