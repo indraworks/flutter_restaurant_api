@@ -4,6 +4,9 @@ import 'package:provider/provider.dart';
 import 'package:restaurant_submit/providers/restaurant_list_provider.dart';
 import 'package:restaurant_submit/providers/theme_provider.dart';
 import 'package:restaurant_submit/states/result_state.dart';
+import 'package:restaurant_submit/widgets/empty_view.dart';
+import 'package:restaurant_submit/widgets/error_view.dart';
+import 'package:restaurant_submit/widgets/loading_view.dart';
 import 'package:restaurant_submit/widgets/restaurant_card.dart';
 import 'package:restaurant_submit/utils/app_routes.dart';
 
@@ -50,12 +53,9 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
         builder: (context, provider, _) {
           switch (provider.state) {
             case ResultState.loading:
-              return Center(
-                child: Lottie.asset(
-                  'assets/animations/loading.json',
-                  width: 140,
-                  height: 140,
-                ),
+              return LoadingView(
+                animationAsset: 'assets/animations/loading.json',
+                size: 120,
               );
             case ResultState.success:
               return RefreshIndicator(
@@ -77,39 +77,17 @@ class _RestaurantListPageState extends State<RestaurantListPage> {
                 onRefresh: () => provider.dofetchAllRestaurants(),
               );
             case ResultState.error:
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Lottie.asset('assets/animations/error.json', width: 180),
-                    const SizedBox(height: 12),
-                    Text(
-                      provider.errorMessage.isNotEmpty
-                          ? provider.errorMessage
-                          : 'Failed to Fetch Data',
-                    ),
-                  ],
-                ),
+              return ErrorView(
+                message: provider.errorMessage,
+                animationAsset: 'assets/animations/error.json',
+                onRetry: () => provider.dofetchAllRestaurants(),
               );
             case ResultState.noData:
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Lottie.asset(
-                      'assets/animations/empty_box.json',
-                      width: 150,
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      provider.errorMessage.isNotEmpty
-                          ? provider.errorMessage
-                          : 'No Restaurant available',
-                      style: Theme.of(context).textTheme.bodyMedium,
-                      textAlign: TextAlign.center,
-                    ),
-                  ],
-                ),
+              return EmptyView(
+                message: provider.errorMessage.isNotEmpty
+                    ? provider.errorMessage
+                    : 'No Data restaurant..',
+                animationAssets: 'assets/animations/empty_box.json',
               );
           }
         },
@@ -127,7 +105,12 @@ jika tidak ada maka akan ada warning ,solusi pakai frameCallback biar lebih aman
     if (mounted) {
       context.read<RestaurantListProvider>().fetchAllRestaurants();
     }
-  });
+  }); return EmptyView(
+                    message: detailProvider.errorMessage.isNotEmpty
+                        ? detailProvider.errorMessage
+                        : 'No Data restaurant..',
+                    animationAssets: 'assets/animations/empty_box.json',
+                  );
 
 
 

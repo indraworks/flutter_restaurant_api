@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:restaurant_submit/utils/app_routes.dart';
+import 'package:restaurant_submit/widgets/empty_view.dart';
+import 'package:restaurant_submit/widgets/error_view.dart';
+import 'package:restaurant_submit/widgets/loading_view.dart';
 
 import '../providers/restaurant_search_provider.dart';
 import '../widgets/restaurant_card.dart';
@@ -59,12 +62,9 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
                 builder: (_) {
                   switch (provider.state) {
                     case ResultState.loading:
-                      return Center(
-                        child: Lottie.asset(
-                          'assets/animations/loading.json',
-                          height: 130,
-                          width: 130,
-                        ),
+                      return LoadingView(
+                        animationAsset: 'assets/animations/loading.json',
+                        size: 120,
                       );
                     case ResultState.success:
                       //jika empry
@@ -89,38 +89,19 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
                       );
 
                     case ResultState.error:
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Lottie.asset(
-                              'assets/animations/error.json',
-                              width: 130,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(provider.errorMessage),
-                          ],
-                        ),
+                      return ErrorView(
+                        //ini blum di refactor rootnya !di utils/errorVoew !
+                        message: provider.errorMessage.isNotEmpty
+                            ? provider.errorMessage
+                            : 'Failed to Fetch Data',
+                        animationAsset: 'assets/animations/error.json',
                       );
                     case ResultState.noData:
-                      return Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Lottie.asset(
-                              'assets/animations/empty.json',
-                              width: 150,
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              provider.errorMessage.isNotEmpty
-                                  ? provider.errorMessage
-                                  : 'No Restaurant available',
-                              style: Theme.of(context).textTheme.bodyMedium,
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
-                        ),
+                      return EmptyView(
+                        message: provider.errorMessage.isNotEmpty
+                            ? provider.errorMessage
+                            : 'failed fetch data',
+                        animationAssets: 'assets/animations/empty_box.json',
                       );
                   }
                 },

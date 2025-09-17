@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:lottie/lottie.dart';
+import 'package:restaurant_submit/widgets/loading_view.dart';
 import '../providers/restaurant_review_provider.dart';
 import '../providers/restaurant_detail_provider.dart';
 import '../states/result_state.dart';
 import '../widgets/review_section.dart';
+import '../widgets/error_view.dart';
+import '../widgets/empty_view.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
   final String id;
@@ -51,13 +54,11 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
             builder: (context, detailProvider, reviewProvider, _) {
               switch (detailProvider.state) {
                 case ResultState.loading:
-                  return Center(
-                    child: Lottie.asset(
-                      'assets/animations/loading.json',
-                      width: 140,
-                      height: 140,
-                    ),
+                  return LoadingView(
+                    animationAsset: 'assets/animations/loading.json',
+                    size: 120,
                   );
+
                 case ResultState.success:
                   //SUCCESS
                   final detail = detailProvider.restaurantDetail!.restaurant;
@@ -139,6 +140,34 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                   );
 
                 case ResultState.error:
+                  return ErrorView(
+                    //ini blum di refactor rootnya !di utils/errorVoew !
+                    message: detailProvider.errorMessage.isNotEmpty
+                        ? detailProvider.errorMessage
+                        : 'Failed to Fetch Data',
+                    animationAsset: 'assets/animations/error.json',
+                    onRetry: () =>
+                        detailProvider.fetchRestaurantDetail(widget.id),
+                  );
+
+                case ResultState.noData:
+                  return EmptyView(
+                    message: detailProvider.errorMessage.isNotEmpty
+                        ? detailProvider.errorMessage
+                        : 'No Data restaurant..',
+                    animationAssets: 'assets/animations/empty_box.json',
+                  );
+              }
+            },
+          ),
+    );
+  }
+}
+
+
+/*
+jadi ini code lama sebelum kita pakai errorVIew widget
+ case ResultState.error:
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
@@ -163,11 +192,21 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                     ),
                   );
 
-                case ResultState.noData:
+
+
+
+
+
+*/
+
+/*
+kode lama untuk noData:
+ case ResultState.noData:
                   return Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
+                      
                         Lottie.asset(
                           'assets/animations/empty_box.json',
                           width: 150,
@@ -183,9 +222,9 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                       ],
                     ),
                   );
-              }
-            },
-          ),
-    );
-  }
-}
+
+
+
+
+
+*/
