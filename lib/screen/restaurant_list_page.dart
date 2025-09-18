@@ -105,7 +105,10 @@ jika tidak ada maka akan ada warning ,solusi pakai frameCallback biar lebih aman
     if (mounted) {
       context.read<RestaurantListProvider>().fetchAllRestaurants();
     }
-  }); return EmptyView(
+  }); 
+  
+  
+  return EmptyView(
                     message: detailProvider.errorMessage.isNotEmpty
                         ? detailProvider.errorMessage
                         : 'No Data restaurant..',

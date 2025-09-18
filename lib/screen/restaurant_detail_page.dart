@@ -142,9 +142,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                 case ResultState.error:
                   return ErrorView(
                     //ini blum di refactor rootnya !di utils/errorVoew !
-                    message: detailProvider.errorMessage.isNotEmpty
-                        ? detailProvider.errorMessage
-                        : 'Failed to Fetch Data',
+                    message: detailProvider.errorMessage,
                     animationAsset: 'assets/animations/error.json',
                     onRetry: () =>
                         detailProvider.fetchRestaurantDetail(widget.id),

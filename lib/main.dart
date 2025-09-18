@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:restaurant_submit/providers/favorite_provider.dart';
 import 'package:restaurant_submit/providers/restaurant_detail_provider.dart';
 import 'package:restaurant_submit/providers/restaurant_list_provider.dart';
 import 'package:restaurant_submit/providers/theme_provider.dart';
@@ -28,6 +29,7 @@ void main() {
         ChangeNotifierProvider(
           create: (_) => RestaurantReviewProvider(service: service),
         ),
+        ChangeNotifierProvider(create: (_) => FavoriteProvider()),
       ],
       child: MyApp(),
     ),
