@@ -1,26 +1,35 @@
 import 'package:flutter/material.dart';
 import 'package:restaurant_submit/screen/favorites_page.dart';
-import 'package:restaurant_submit/screen/restaurant_search_page.dart';
+import 'package:restaurant_submit/screen/home_page.dart';
+import 'package:restaurant_submit/screen/settings_page.dart';
 import '../screen/restaurant_detail_page.dart';
-import '../screen/restaurant_list_page.dart';
+import '../screen/restaurant_search_page.dart';
 
 class AppRoutes {
-  static const String home = '/';
-  static const String search = '/search';
   static const String detail = '/detail';
-  static const String favorites = "/favorites";
+  static const String search = '/search';
+  static const String favorites = '/favorites';
+  static const String home = '/';
+  static const String settings = '/settings';
 
-  static Route<dynamic> generateRoute(RouteSettings settings) {
-    final name = settings.name ?? '';
-
+  static Route<dynamic>? generateRoute(RouteSettings routeSettings) {
+    final name = routeSettings.name ?? '';
     switch (name) {
       case home:
-        return MaterialPageRoute(builder: (_) => const RestaurantListPage());
+        return MaterialPageRoute(builder: (_) => const HomePage());
+
+      case favorites:
+        return MaterialPageRoute(builder: (_) => const FavoritesPage());
+
       case search:
         return MaterialPageRoute(builder: (_) => const RestaurantSearchPage());
-      case favorites:
-        return MaterialPageRoute(builder: (_) => FavoritesPage());
-      default: //detail
+
+      case settings:
+        return MaterialPageRoute(builder: (_) => const SettingsPage());
+
+      default:
+
+        //detail with dynmaic id  :"/detail/{id}"
         if (name.startsWith('$detail/')) {
           final id = name.split('/').last;
 
@@ -28,11 +37,16 @@ class AppRoutes {
             builder: (_) => RestaurantDetailPage(id: id),
           );
         }
+        //fallback jika route tidak dikenali
+        return MaterialPageRoute(
+          builder: (_) =>
+              Scaffold(body: Center(child: Text('Page not Found!'))),
+        );
     }
-    //fallbacak route
-    return MaterialPageRoute(
-      builder: (_) =>
-          const Scaffold(body: Center(child: Text('Page not found!'))),
-    );
   }
 }
+/*note:
+app_routes.dart
+Hanya dipakai untuk navigasi ke halaman detail restoran.
+
+*/

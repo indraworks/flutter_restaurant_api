@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../providers/favorite_provider.dart';
-import '../widgets/restaurant_card.dart';
+
 import '../states/result_state.dart';
-import '../utils/error_handler.dart';
-import '../screen/restaurant_detail_page.dart';
+
 //viewloading,viewError.viewNodata
 import '../widgets/empty_view.dart';
 import '../widgets/error_view.dart';
@@ -54,6 +53,70 @@ class _FavoritesPageState extends State<FavoritesPage> {
 
                 itemBuilder: (context, index) {
                   final resto = provider.favorites[index];
+
+                  return Dismissible(
+                    key: Key(resto.id),
+                    direction: DismissDirection.endToStart, //geser kiri
+                    background: Container(
+                      color: Colors.red,
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: Icon(Icons.delete, color: Colors.white),
+                    ),
+                    onDismissed: (_) {
+                      provider.removeFavorite(resto.id);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('${resto.name} removed from favorites'),
+                        ),
+                      );
+                    },
+                    child: Card(
+                      margin: EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
+                      child: ListTile(
+                        leading: resto.pictureId != null
+                            ? Image.network(
+                                "https://restaurant-api.dicoding.dev/images/small/${resto.pictureId}",
+                                width: 60,
+                                fit: BoxFit.cover,
+                              )
+                            : Icon(Icons.restaurant),
+                        title: Text(resto.name),
+                        subtitle: Text('${resto.city}• ⭐ ${resto.rating}'),
+                        onTap: () {
+                          Navigator.pushNamed(context, '/detail/${resto.id}');
+                        },
+                      ),
+                    ),
+                  );
+                },
+              );
+            case ResultState.noData:
+              return EmptyView(
+                message: provider.errorMessage.isNotEmpty
+                    ? provider.errorMessage
+                    : 'No Data restaurant..',
+                animationAssets: 'assets/animations/empty_box.json',
+              );
+          }
+        },
+      ),
+    );
+  }
+}
+
+/*
+Olf Code :di wraping dengan dismisable yg cardnya nnatinya :
+case ResultState.success:
+              return ListView.builder(
+                itemCount: provider.favorites.length,
+
+                itemBuilder: (context, index) {
+                  final resto = provider.favorites[index];
+                  
                   return Card(
                     margin: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                     child: ListTile(
@@ -73,16 +136,8 @@ class _FavoritesPageState extends State<FavoritesPage> {
                   );
                 },
               );
-            case ResultState.noData:
-              return EmptyView(
-                message: provider.errorMessage.isNotEmpty
-                    ? provider.errorMessage
-                    : 'No Data restaurant..',
-                animationAssets: 'assets/animations/empty_box.json',
-              );
-          }
-        },
-      ),
-    );
-  }
-}
+
+
+
+
+*/

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/restaurant_model.dart';
-import '../utils/favorite_db.dart';
+import '../db/favorite_db.dart';
 import '../states/result_state.dart';
 import '../utils/error_handler.dart';
 

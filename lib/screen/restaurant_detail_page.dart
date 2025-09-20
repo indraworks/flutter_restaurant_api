@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 
 import 'package:restaurant_submit/models/restaurant_model.dart';
 import 'package:restaurant_submit/providers/favorite_provider.dart';
+import 'package:restaurant_submit/widgets/hero_image.dart';
 import 'package:restaurant_submit/widgets/loading_view.dart';
 import '../providers/restaurant_review_provider.dart';
 import '../providers/restaurant_detail_provider.dart';
@@ -130,12 +131,23 @@ data yang tidak dipakai DB (menus, reviews, dsb) akan mubazir.
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         //Gambar Restaurant
-                        Image.network(
-                          "https://restaurant-api.dicoding.dev/images/large/${detail.pictureId}",
-                          width: double.infinity,
-                          height: 200,
-                          fit: BoxFit.cover,
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.only(
+                              bottomLeft: Radius.circular(45),
+                              topRight: Radius.circular(45),
+                            ),
+                            child: HeroImage(
+                              tag: detail.id,
+                              imageUrl:
+                                  "https://restaurant-api.dicoding.dev/images/large/${detail.pictureId}",
+                              width: double.infinity,
+                              height: 200,
+                            ),
+                          ),
                         ),
+
                         Padding(
                           padding: const EdgeInsets.all(16.0),
                           child: Column(

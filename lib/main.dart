@@ -8,8 +8,9 @@ import 'package:restaurant_submit/providers/restaurant_search_provider.dart';
 import 'package:restaurant_submit/service/restaurant_service.dart';
 import 'package:restaurant_submit/providers/restaurant_review_provider.dart';
 import 'package:restaurant_submit/themes/app_theme.dart';
+
+import 'package:restaurant_submit/screen/main_page.dart';
 import 'package:restaurant_submit/utils/app_routes.dart';
-import 'package:restaurant_submit/utils/favorite_db.dart';
 
 void main() {
   //Multiprovider declare & wraping
@@ -50,7 +51,9 @@ class MyApp extends StatelessWidget {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: provider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-         home: const MainPage,
+          onGenerateRoute: AppRoutes
+              .generateRoute, //ini menerima function bukan panggil func generateRoute()
+          home: const MainPage(),
         );
       },
     );

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:restaurant_submit/screen/favorites_page.dart';
-import 'package:restaurant_submit/screen/restaurant_list_page.dart';
+import 'package:restaurant_submit/screen/home_page.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -13,7 +13,7 @@ class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = const [
-    RestaurantListPage(), //daftar restaurant
+    HomePage(), //daftar restaurant
     FavoritesPage(), //halaman favorite
     //SettingsPage(), //halaman pengaturan
   ];
