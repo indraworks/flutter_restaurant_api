@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:lottie/lottie.dart';
+
+import 'package:restaurant_submit/models/restaurant_model.dart';
+import 'package:restaurant_submit/providers/favorite_provider.dart';
 import 'package:restaurant_submit/widgets/loading_view.dart';
 import '../providers/restaurant_review_provider.dart';
 import '../providers/restaurant_detail_provider.dart';
+
 import '../states/result_state.dart';
 import '../widgets/review_section.dart';
 import '../widgets/error_view.dart';
@@ -26,11 +29,15 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
   @override
   void initState() {
     super.initState();
+    //begitu masuk halaman detail ->fetch detail dari API
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         context.read<RestaurantDetailProvider>().fetchRestaurantDetail(
           widget.id,
         );
+        // sinkronisasi favorite provider dengan DB <OLD gak perlu>
+        // context.read<FavoriteProvider>().isFavoritrSync(id);
       }
     });
   }
@@ -45,8 +52,255 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text('Restaurant Detail')),
+    //consumer3
+    return Consumer3<
+      RestaurantDetailProvider,
+      RestaurantReviewProvider,
+      FavoriteProvider
+    >(
+      builder: (context, detailProvider, reviewProvider, favoriteProvider, _) {
+        final state = detailProvider.state;
+        return Scaffold(
+          appBar: AppBar(
+            title: const Text('Restaurant Detail'),
+            actions: [
+              // ⭐ Icon favorit → sync dengan provider
+              if (state == ResultState.success)
+                IconButton(
+                  icon: Icon(
+                    favoriteProvider.isFavoriteSync(widget.id)
+                        ? Icons.favorite
+                        : Icons.favorite_border,
+                  ),
+                  color: Colors.red,
+                  onPressed: () {
+                    final detail = detailProvider.restaurantDetail!.restaurant;
+                    //favoriteProvider.toggleFavorite(detail as Restaurant );
+                    //jadi data restaurantDetail harus dimaping jadi restaurant sebab
+                    //pada db hanya terdiri atas field2 table restaurant saja !
+                    //trus kita bisa utk maping kita buat di constructor saja
+                    //atau dgn extenstion map dari detail ke resto krn field2nya ikut dari resto
+                    //nah karena casenya hanya sdikit kita buat factory constructor saja!
+                    //yaitu di model Restaurant kita buat
+                    /*
+              Kenapa harus mapping?
+Karena tabel favorites di DB hanya butuh field singkat (id, name, city, pictureId, rating) → cocok dengan Restaurant.
+Kalau langsung pakai RestaurantDetail, 
+data yang tidak dipakai DB (menus, reviews, dsb) akan mubazir.
+
+
+                  */
+                    //pada contoh dibawah kita tak pakai extendsion helper tapi pakai facatory constructor di resto model
+                    final simpleRestaurant = Restaurant.fromDetail(detail);
+                    favoriteProvider.toggleFavorite(simpleRestaurant);
+                  },
+                ),
+            ],
+          ),
+          body: Builder(
+            builder: (_) {
+              switch (state) {
+                case ResultState.loading:
+                  return LoadingView(
+                    animationAsset: 'assets/animations/loading.json',
+                    size: 120,
+                  );
+
+                case ResultState.error:
+                  return ErrorView(
+                    //ini blum di refactor rootnya !di utils/errorVoew !
+                    message: detailProvider.errorMessage,
+                    animationAsset: 'assets/animations/error.json',
+                    onRetry: () =>
+                        detailProvider.fetchRestaurantDetail(widget.id),
+                  );
+
+                case ResultState.noData:
+                  return EmptyView(
+                    message: detailProvider.errorMessage.isNotEmpty
+                        ? detailProvider.errorMessage
+                        : 'No Data restaurant..',
+                    animationAssets: 'assets/animations/empty_box.json',
+                  );
+
+                case ResultState.success:
+                  final detail = detailProvider.restaurantDetail!.restaurant;
+                  return SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        //Gambar Restaurant
+                        Image.network(
+                          "https://restaurant-api.dicoding.dev/images/large/${detail.pictureId}",
+                          width: double.infinity,
+                          height: 200,
+                          fit: BoxFit.cover,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              //Name Resto
+                              Text(
+                                detail.name,
+                                style: Theme.of(
+                                  context,
+                                ).textTheme.headlineSmall,
+                              ),
+                              SizedBox(height: 4),
+                              Text('${detail.city}, ${detail.address}'),
+                              SizedBox(height: 8),
+
+                              //Rating
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.star,
+                                    color: Colors.amber,
+                                    size: 20,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Text('${detail.rating}'),
+                                ],
+                              ),
+                              SizedBox(height: 16),
+
+                              //Description
+                              Text(detail.description),
+                              const SizedBox(height: 16),
+
+                              //Menu Makanana
+                              Text(
+                                "Menu Makanan",
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                              Wrap(
+                                spacing: 8,
+                                children: //kotak array wajib hapus []
+                                detail.foods
+                                    .map((f) => Chip(label: Text(f)))
+                                    .toList(),
+                              ),
+                              SizedBox(height: 16),
+                              //Menu Minuman
+                              Text(
+                                "Menu Minuman",
+                                style: Theme.of(context).textTheme.titleMedium,
+                              ),
+                              Wrap(
+                                spacing: 8,
+                                children: detail.drinks
+                                    .map((d) => Chip(label: Text(d)))
+                                    .toList(),
+                              ),
+                              SizedBox(height: 24),
+                              // Review Section
+                              ReviewSection(
+                                restaurantId: detail.id,
+                                nameController: _nameController,
+                                reviewController: _reviewController,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+              }
+            },
+          ),
+        );
+      },
+    );
+  }
+}
+
+
+/*
+jadi ini code lama sebelum kita pakai errorVIew widget
+ case ResultState.error:
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Lottie.asset(
+                          'assets/animations/error.json',
+                          width: 180,
+                          height: 180,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          detailProvider.errorMessage.isNotEmpty
+                              ? detailProvider.errorMessage
+                              : 'Failed to Fetch Data',
+                        ),
+                        ElevatedButton(
+                          onPressed: () =>
+                              detailProvider.fetchRestaurantDetail(widget.id),
+                          child: const Text('Retry'),
+                        ),
+                      ],
+                    ),
+                  );
+
+
+
+
+
+
+*/
+
+/*
+kode lama untuk noData:
+ case ResultState.noData:
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                      
+                        Lottie.asset(
+                          'assets/animations/empty_box.json',
+                          width: 150,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          detailProvider.errorMessage.isNotEmpty
+                              ? detailProvider.errorMessage
+                              : 'No Restaurant available',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  );
+
+
+
+
+
+*/
+
+/*
+CODE LAMA!
+   return Scaffold(
+      appBar: AppBar(
+        title: const Text('Restaurant Detail'),
+        actions: [
+          //Favorite Icon
+          Consumer<FavoriteProvider>(
+            builder: (context, favProvider, _) {
+              final detail = detailProvider.restaurantDetail?.restaurant;
+              if (detail == null) return SizedBox();
+               final  isFav = favProvider.isFavorite(detail.id);
+              return IconButton(
+                 icon: Icon(isFav ?Icons.favorite :Icons.favorite_border,
+                 color:isFav ? colors.red :null)
+                ,onPressed: onPressed,)
+            },
+          ),
+        ],
+      ),
       body: //Consumer<RestaurantDetailProvider>( ---old sekarang ada 2 consumer
           //builder: (context, provider, _) {---old sekarang ada 2 consumer
           //jika Consumer2 berarti dalam kurung ada 2 provider yg dipegang atau dilihat statenya !
@@ -159,69 +413,6 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
             },
           ),
     );
-  }
-}
-
-
-/*
-jadi ini code lama sebelum kita pakai errorVIew widget
- case ResultState.error:
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Lottie.asset(
-                          'assets/animations/error.json',
-                          width: 180,
-                          height: 180,
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          detailProvider.errorMessage.isNotEmpty
-                              ? detailProvider.errorMessage
-                              : 'Failed to Fetch Data',
-                        ),
-                        ElevatedButton(
-                          onPressed: () =>
-                              detailProvider.fetchRestaurantDetail(widget.id),
-                          child: const Text('Retry'),
-                        ),
-                      ],
-                    ),
-                  );
-
-
-
-
-
-
-*/
-
-/*
-kode lama untuk noData:
- case ResultState.noData:
-                  return Center(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                      
-                        Lottie.asset(
-                          'assets/animations/empty_box.json',
-                          width: 150,
-                        ),
-                        const SizedBox(height: 12),
-                        Text(
-                          detailProvider.errorMessage.isNotEmpty
-                              ? detailProvider.errorMessage
-                              : 'No Restaurant available',
-                          style: Theme.of(context).textTheme.bodyMedium,
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  );
-
-
 
 
 

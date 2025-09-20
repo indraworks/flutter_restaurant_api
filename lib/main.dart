@@ -9,6 +9,7 @@ import 'package:restaurant_submit/service/restaurant_service.dart';
 import 'package:restaurant_submit/providers/restaurant_review_provider.dart';
 import 'package:restaurant_submit/themes/app_theme.dart';
 import 'package:restaurant_submit/utils/app_routes.dart';
+import 'package:restaurant_submit/utils/favorite_db.dart';
 
 void main() {
   //Multiprovider declare & wraping
@@ -49,8 +50,7 @@ class MyApp extends StatelessWidget {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: provider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-          initialRoute: AppRoutes.home,
-          onGenerateRoute: AppRoutes.generateRoute,
+         home: const MainPage,
         );
       },
     );

@@ -1,3 +1,5 @@
+import 'package:restaurant_submit/models/restaurant_detail_model.dart';
+
 class Restaurant {
   final String id;
   final String name;
@@ -24,4 +26,17 @@ class Restaurant {
     city: json['city'] ?? '',
     rating: (json['rating'] is num) ? (json['rating'] as num).toDouble() : 0.0,
   );
+
+  //factory utk maping jadi conversi dari detail ,detail obj class dgn field2nya
+  //masuk jadi arg nah kita maping field2 yang dibutuhkan saja yang ada kita match kan
+  factory Restaurant.fromDetail(RestaurantDetail detail) {
+    return Restaurant(
+      id: detail.id,
+      name: detail.name,
+      description: detail.description,
+      pictureId: detail.pictureId,
+      city: detail.city,
+      rating: detail.rating,
+    );
+  }
 }

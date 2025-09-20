@@ -5,14 +5,25 @@ import '../states/result_state.dart';
 import '../utils/error_handler.dart';
 
 class FavoriteProvider extends ChangeNotifier {
+  final FavoriteDb _db = FavoriteDb.instance;
+
+  final List<Restaurant> _favorites = [];
+  final Set<String> _favoriteIds = <String>{};
   ResultState _state = ResultState.loading;
-  ResultState get state => _state;
-
   String _errorMessage = '';
-  String get errorMessage => _errorMessage;
 
-  List<Restaurant> _favorites = [];
-  List<Restaurant> get favorites => _favorites;
+  //FavoriteProvider(FavoriteDb instance);
+
+  //getter
+  ResultState get state => _state;
+  String get errorMessage => _errorMessage;
+  List<Restaurant> get favorites => List.unmodifiable(_favorites);
+
+  //synchronise check for UI
+
+  // FavoriteProvider() {
+  //   loadFavorites();
+  // }
 
   /// Load smua data  favorite dari db
 
@@ -22,25 +33,33 @@ class FavoriteProvider extends ChangeNotifier {
       _state = ResultState.loading;
       notifyListeners();
       //data coming
-      final data = await FavoriteDb.instance.getAllFavorites();
-      _favorites = data.map((map) {
-        return Restaurant(
-          id: map["id"],
-          name: map['name'],
-          description: '',
-          pictureId: map['pictureId'],
-          city: map['city'],
-          rating: (map['rating'] as num).toDouble(),
+
+      final rows = await _db.getAllFavorites();
+      //favorites
+      _favorites
+        ..clear()
+        ..addAll(
+          rows.map(
+            (map) => Restaurant(
+              id: map['id']?.toString() ?? '',
+              name: map['name'] ?? ' ',
+              description: '',
+              pictureId: map['pictureId'] ?? '',
+              city: map['city'] ?? '',
+              rating: (map['rating'] is num)
+                  ? (map['rating'] as num).toDouble()
+                  : 0.0,
+            ),
+          ),
         );
-      }).toList();
+
+      //favoriteIds
+      _favoriteIds
+        ..clear()
+        ..addAll(_favorites.map((r) => r.id));
+
       //check empty
-      if (_favorites.isEmpty) {
-        _state = ResultState.noData;
-        _errorMessage = "No favorites Yet..";
-      } else {
-        //success
-        _state = ResultState.success;
-      }
+      _state = favorites.isEmpty ? ResultState.noData : ResultState.success;
     } catch (error) {
       _state = ResultState.error;
       _errorMessage = mapErrorToMessage(error);
@@ -48,20 +67,54 @@ class FavoriteProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  //hapus dari resto favorit
-  Future<void> deleteFavorite(String id) async {
+  //optimistic add:update in memory  immediately ,then write to DB
+  bool isFavoriteSync(String id) => _favoriteIds.contains(id);
+  //utk add /insert remove gak perlu notifylistener dan state
+  //cukup bagian errornya saja ada state dan notify biar tidak sllau rebuit
+  //cukup lewat loadFavorites sudah memwakili ! (no-repetation)
+
+  //yanglainya add favorite  remove delete dan toggle sudah ikut yag atas!
+  /// ➕ Add ke DB + memory
+
+  Future<void> addFavorite(Restaurant r) async {
     try {
-      await FavoriteDb.instance.deleteFavorite(id);
+      final data = {
+        'id': r.id,
+        'name': r.name,
+        'city': r.city,
+        'pictureId': r.pictureId,
+        'rating': r.rating,
+        'createdAt': DateTime.now().millisecondsSinceEpoch,
+      };
+      await _db.insertFavorite(data);
+      await loadFavorites(); //referesh list setelah insert
+    } catch (error) {
+      _state = ResultState.error;
+      _errorMessage = 'Failed to add favorite $error';
+      notifyListeners();
+    }
+  }
+
+  // REMOVE RESTORANT DaRI AFVORUTE DARI DB + MEMORY
+
+  Future<void> removeFavorite(String id) async {
+    try {
+      await _db.deleteFavorite(id);
+      //refresh list stlah delete
       await loadFavorites();
     } catch (error) {
-      _state = ResultState.error;
-      _errorMessage = mapErrorToMessage(error);
+      //revert on error :we re-load from DB to safe
+      _errorMessage = 'Failed to remove favorite $error';
+      notifyListeners();
     }
-    notifyListeners();
   }
 
-  //check apa resto already favor?
-  Future<bool> isFavorite(String id) async {
-    return await FavoriteDb.instance.isFavorite(id);
+  ///Toggle (add/remvoe) based on already atau not yet favorite?
+  Future<void> toggleFavorite(Restaurant r) async {
+    if (isFavoriteSync(r.id)) {
+      await removeFavorite(r.id);
+    } else {
+      await addFavorite(r);
+    }
   }
 }
