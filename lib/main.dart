@@ -5,7 +5,7 @@ import 'package:restaurant_submit/providers/restaurant_detail_provider.dart';
 import 'package:restaurant_submit/providers/restaurant_list_provider.dart';
 import 'package:restaurant_submit/providers/theme_provider.dart';
 import 'package:restaurant_submit/providers/restaurant_search_provider.dart';
-import 'package:restaurant_submit/service/restaurant_service.dart';
+import 'package:restaurant_submit/services/restaurant_service.dart';
 import 'package:restaurant_submit/providers/restaurant_review_provider.dart';
 import 'package:restaurant_submit/themes/app_theme.dart';
 
