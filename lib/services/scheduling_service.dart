@@ -1,59 +1,36 @@
+// lib/services/scheduling_service.dart
 import 'package:android_alarm_manager_plus/android_alarm_manager_plus.dart';
-import 'dart:isolate';
-import 'dart:ui';
-import 'package:restaurant_submit/services/notification_service.dart';
 
-class SchedulingService {
-  static const int _dailyAlarmId = 1;
-  static const String _isolateName = "isolate_daily_reminder";
-
-  static SendPort? _uiSendPort;
-
-  /// initialize alarm mananger & isolate
-  static Future<void> init() async {
-    await AndroidAlarmManager.initialize();
-  }
-
-  // dijalankan oleh alarm manager ( background isolate )
-  static Future<void> callback() async {
-    final notifService = NotificationService();
-    await notifService.scheduleDailyAt11();
-
-    _uiSendPort ??= IsolateNameServer.lookupPortByName(_isolateName);
-    _uiSendPort?.send(null);
-  }
-
-  /// schedule reminder harian (misalnya jam 11 pagi)
-  static Future<void> scheduleDailyReminder() async {
-    await AndroidAlarmManager.periodic(
-      const Duration(days: 1),
-      _dailyAlarmId,
-      callback,
-      startAt: DateTime.now(), // mulai dari sekarang, lalu setiap 24 jam
-      exact: true,
-      wakeup: true,
-    );
-  }
-
-  /// cancel alarm
-  static Future<void> cancelDailyReminder() async {
-    await AndroidAlarmManager.cancel(_dailyAlarmId);
-  }
+/// Interface (abstract class) supaya bisa dipalsukan saat testing
+abstract class SchedulingService {
+  Future<void> scheduleDailyReminder();
+  Future<void> cancelDailyReminder();
 }
 
-/*
-old :
-daily alarm:
-await AndroidAlarmManager.periodic(
-      const Duration(hours: 24), // interval harian
-      _dailyAlarmId, // unique ID alarm
-      callback, // fungsi yang dijalankan
-      startAt: DateTime.now().add(
-        const Duration(seconds: 5),
-      ), // testing 5 detik dulu
+/// Implementasi nyata (pakai AlarmManager)
+class AndroidSchedulingService implements SchedulingService {
+  static const int _dailyAlarmId = 1;
+
+  @override
+  Future<void> scheduleDailyReminder() async {
+    await AndroidAlarmManager.periodic(
+      const Duration(hours: 24),
+      _dailyAlarmId,
+      _callback,
+      startAt: DateTime.now().add(const Duration(seconds: 5)),
       exact: true,
       wakeup: true,
     );
+  }
 
+  @override
+  Future<void> cancelDailyReminder() async {
+    await AndroidAlarmManager.cancel(_dailyAlarmId);
+  }
 
-*/
+  /// Fungsi yg dijalankan AlarmManager di background isolate
+  static Future<void> _callback() async {
+    // nanti bisa panggil NotificationService.showNotification() di sini
+    print("⏰ Daily reminder triggered!");
+  }
+}

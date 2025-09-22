@@ -21,17 +21,20 @@ void main() {
       expect(provider.isScheduled, false);
     });
 
-    test('toggleScheduled(true) menyimpan ke SharedPreferences', () async {
-      SharedPreferences.setMockInitialValues({});
-      final provider = SettingsProvider(fakeService);
+    test(
+      'toggleScheduled(true) menyimpan ke SharedPreferences +service',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final provider = SettingsProvider(fakeService);
 
-      await provider.toggleScheduled(true);
+        await provider.toggleScheduled(true);
 
-      expect(provider.isScheduled, true);
+        expect(provider.isScheduled, true);
 
-      final prefs = await SharedPreferences.getInstance();
-      expect(prefs.getBool('daily_reminder'), true);
-    });
+        final prefs = await SharedPreferences.getInstance();
+        expect(prefs.getBool('daily_reminder'), true);
+      },
+    );
 
     test('toggleScheduled(false) menyimpan ke SharedPreferences', () async {
       SharedPreferences.setMockInitialValues({'daily_reminder': true});

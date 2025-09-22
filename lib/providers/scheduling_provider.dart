@@ -3,13 +3,13 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../services/scheduling_service.dart';
 
 class SchedulingProvider extends ChangeNotifier {
-  //final SchedulingService _schedulingService = SchedulingService();
+  final SchedulingService schedulingService;
   static const _prefKey = 'isScheduled';
   bool _isScheduled = false;
 
   bool get isScheduled => _isScheduled;
 
-  SchedulingProvider() {
+  SchedulingProvider(this.schedulingService) {
     _loadFromPrefs();
   }
   //toggle dari UI
@@ -21,9 +21,9 @@ class SchedulingProvider extends ChangeNotifier {
 
     //jika true
     if (isScheduled) {
-      await SchedulingService.scheduleDailyReminder();
+      await schedulingService.scheduleDailyReminder();
     } else {
-      await SchedulingService.cancelDailyReminder();
+      await schedulingService.cancelDailyReminder();
     }
   }
 
@@ -34,7 +34,7 @@ class SchedulingProvider extends ChangeNotifier {
 
     //jika rersinpan ON ,pastikan scheduling tetap active
     if (_isScheduled) {
-      await SchedulingService.scheduleDailyReminder();
+      await schedulingService.scheduleDailyReminder();
     }
     notifyListeners();
   }

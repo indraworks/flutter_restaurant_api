@@ -22,7 +22,7 @@ void main() {
 
   //final notifService = NotificationService();
   //dan untuk notif sesuai dengan punyamu saya ganti ya jadi scheduleSErvice?
-  final scheduleService = SchedulingService();
+
   runApp(
     MultiProvider(
       providers: [
@@ -41,7 +41,7 @@ void main() {
         ),
         ChangeNotifierProvider(create: (_) => FavoriteProvider()),
         ChangeNotifierProvider(
-          create: (_) => SettingsProvider(scheduleService),
+          create: (_) => SettingsProvider(AndroidSchedulingService()),
         ),
       ],
       child: MyApp(),
