@@ -47,7 +47,7 @@ class NotificationService {
   }
 
   //schedule notification (daily)
-  Future<void> scheduleDailyNotification() async {
+  Future<void> scheduleDailyAt11() async {
     //implementation optional utnk jam tertentu!
     //disini diminta setiap hari jam 11 siang
     final now = tz.TZDateTime.now(tz.local);
@@ -86,6 +86,11 @@ class NotificationService {
           DateTimeComponents.time, // supaya repeat tiap hari jam yg sama
       payload: null,
     );
+  }
+
+  /// Tambahan alias
+  Future<void> scheduleDailyReminder() async {
+    await scheduleDailyAt11();
   }
 
   /// Cancel notifikasi (misal toggle off)

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:restaurant_submit/screen/favorites_page.dart';
 import 'package:restaurant_submit/screen/home_page.dart';
+import 'package:restaurant_submit/screen/settings_page.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -15,7 +16,7 @@ class _MainPageState extends State<MainPage> {
   final List<Widget> _pages = const [
     HomePage(), //daftar restaurant
     FavoritesPage(), //halaman favorite
-    //SettingsPage(), //halaman pengaturan
+    SettingsPage(), //halaman pengaturan
   ];
   //utk tap mengindek-an tiap page
   void _onitemTapped(int index) {
