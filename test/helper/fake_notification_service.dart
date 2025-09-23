@@ -17,8 +17,7 @@ class FakeNotificationService implements NotificationService {
 
   @override
   Future<void> init() async {
-    // TODO: implement init
-    throw UnimplementedError();
+    initialized = true;
   }
 
   @override

@@ -1,16 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class ThemeProvider extends ChangeNotifier {
-  //state
-  bool _isDarkmode = false;
+  static const _prefKey = 'isDarkMode';
 
-  //getterr
-  bool get isDarkMode => _isDarkmode;
+  bool _isDarkMode = false;
+  bool get isDarkMode => _isDarkMode;
 
-  //functionnya
-  //dan notifylistener kasih ntofy pada para pendengar setia!
-  void toggleTheme() {
-    _isDarkmode = !_isDarkmode;
+  ThemeProvider() {
+    _loadFromPrefs();
+  }
+
+  Future<void> toggleTheme() async {
+    _isDarkMode = !_isDarkMode;
+    notifyListeners();
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool(_prefKey, _isDarkMode);
+  }
+
+  Future<void> _loadFromPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    _isDarkMode = prefs.getBool(_prefKey) ?? false;
     notifyListeners();
   }
 }
+
+// old :class ThemeProvider extends ChangeNotifier {
+//   bool _isDarkmode = false;
+
+//   bool get isDarkMode => _isDarkmode;
+
+//   void toggleTheme() {
+//     _isDarkmode = !_isDarkmode;
+//     notifyListeners();
+//   }
+// }

@@ -28,8 +28,6 @@ class AppRoutes {
         return MaterialPageRoute(builder: (_) => const SettingsPage());
 
       default:
-
-        //detail with dynmaic id  :"/detail/{id}"
         if (name.startsWith('$detail/')) {
           final id = name.split('/').last;
 
@@ -37,7 +35,7 @@ class AppRoutes {
             builder: (_) => RestaurantDetailPage(id: id),
           );
         }
-        //fallback jika route tidak dikenali
+
         return MaterialPageRoute(
           builder: (_) =>
               Scaffold(body: Center(child: Text('Page not Found!'))),
@@ -45,8 +43,3 @@ class AppRoutes {
     }
   }
 }
-/*note:
-app_routes.dart
-Hanya dipakai untuk navigasi ke halaman detail restoran.
-
-*/

@@ -3,8 +3,7 @@ import 'package:lottie/lottie.dart';
 
 class ErrorView extends StatelessWidget {
   final String message;
-  final VoidCallback?
-  onRetry; //kalau optional jangan lagi diconstruct tulis required
+  final VoidCallback? onRetry;
   final String? animationAsset;
 
   const ErrorView({

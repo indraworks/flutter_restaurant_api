@@ -19,11 +19,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   @override
-  //initState
   void initState() {
-    //panggil state sekalisetelah widget ter-mount
     super.initState();
-    //pakai addPostFrameCallBack,kalau pakai microtask harus check if mounted
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<RestaurantListProvider>().dofetchAllRestaurants();
     });
@@ -48,7 +46,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
       ),
-      //halaman page ini refer pada smua state di Restaurant Provider
+
       body: Consumer<RestaurantListProvider>(
         builder: (context, provider, _) {
           switch (provider.state) {
@@ -95,26 +93,3 @@ class _HomePageState extends State<HomePage> {
     );
   }
 }
-
-
-/*CATATAN :
-kalau pakai microtask harus ada if mounted  apakah frame pertama udah jalan?
-jika tidak ada maka akan ada warning ,solusi pakai frameCallback biar lebih aman dan rapi
-
- Future.microtask(() {
-    if (mounted) {
-      context.read<RestaurantListProvider>().fetchAllRestaurants();
-    }
-  }); 
-  
-  
-  return EmptyView(
-                    message: detailProvider.errorMessage.isNotEmpty
-                        ? detailProvider.errorMessage
-                        : 'No Data restaurant..',
-                    animationAssets: 'assets/animations/empty_box.json',
-                  );
-
-
-
-*/

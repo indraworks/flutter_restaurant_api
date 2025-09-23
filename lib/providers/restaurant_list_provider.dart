@@ -8,28 +8,32 @@ import '../models/restaurant_list_response.dart';
 
 class RestaurantListProvider extends ChangeNotifier {
   final RestaurantService _service;
-  //sekali paggil di consturcor fetch list
+
   RestaurantListProvider({required RestaurantService service})
     : _service = service {
-    //fetch sekali ketika awal service melakukan kita  panggil dari provider!
-    dofetchAllRestaurants(); // nama func ditulis dibawah !
+    dofetchAllRestaurants();
   }
   ResultState _state = ResultState.loading;
-  ResultState get state => _state;
 
   String _errorMessage = '';
+
+  //kasih nilai awal kosong agar tidak LateInitializationError
+  RestaurantListResponse _restaurantResult = RestaurantListResponse(
+    error: false,
+    message: '',
+    count: 0,
+    restaurants: [],
+  );
+
+  RestaurantListResponse get restaurantResult => _restaurantResult;
+  ResultState get state => _state;
   String get errorMessage => _errorMessage;
 
-  late RestaurantListResponse _restaurantResult;
-  RestaurantListResponse get restaurantResult => _restaurantResult;
-
-  //fetch all restaurant ambil state2nya !
-  //ini isi dari fetchAllRestaurants() yg ditulis di constuctor atas
   Future<void> dofetchAllRestaurants() async {
     try {
       _state = ResultState.loading;
       notifyListeners();
-      //yg ini function yang ada diservice dipanggil _service.fetchRestaurantList()
+
       final result = await _service.fetchRestaurantListResponse();
       if (result.error || result.count == 0 || result.restaurants.isEmpty) {
         _state = ResultState.noData;
@@ -39,8 +43,7 @@ class RestaurantListProvider extends ChangeNotifier {
         _restaurantResult = result;
       }
     } catch (e) {
-      _state = ResultState.error; //masukan error boo; distate
-      //masukan error handler di errorMessage
+      _state = ResultState.error;
       _errorMessage = mapErrorToMessage(e);
     }
 

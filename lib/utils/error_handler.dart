@@ -1,5 +1,3 @@
-//pembuatan penangannan error yang re-usable
-
 String mapErrorToMessage(Object error) {
   final errorStr = error.toString();
   if (errorStr.contains("SocketException")) {

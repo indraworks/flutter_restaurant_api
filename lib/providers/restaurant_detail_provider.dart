@@ -10,12 +10,8 @@ class RestaurantDetailProvider extends ChangeNotifier {
   final RestaurantService service;
 
   RestaurantDetailProvider({required this.service});
-  //atau
-  // final RestaurantService _service;
-  // RestaurantDetailProvider(this._service);
 
-  ResultState _state =
-      ResultState.loading; //didapat dari listprovider saat fetct smua resto
+  ResultState _state = ResultState.loading;
   ResultState get state => _state;
 
   late RestaurantDetailResponse? _restaurantDetail;
@@ -24,7 +20,6 @@ class RestaurantDetailProvider extends ChangeNotifier {
   String _errorMessage = '';
   String get errorMessage => _errorMessage;
 
-  // fetch restaurant detail
   Future<void> fetchRestaurantDetail(String id) async {
     try {
       _state = ResultState.loading;

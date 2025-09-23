@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:lottie/lottie.dart';
 import 'package:provider/provider.dart';
 import 'package:restaurant_submit/utils/app_routes.dart';
 import 'package:restaurant_submit/widgets/empty_view.dart';
@@ -40,12 +39,12 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
                     provider.clearSearch();
                   },
                 ),
-                //betuk textField garis agak lengkung
+
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                 ),
               ),
-              //utk tempat masukan text pada textField
+
               textInputAction: TextInputAction.search,
               onSubmitted: (value) {
                 if (value.isNotEmpty) {
@@ -56,7 +55,7 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
               },
             ),
             SizedBox(height: 16),
-            //HASIL PENCARIAN tampilkan widget!
+
             Expanded(
               child: Builder(
                 builder: (_) {
@@ -67,7 +66,6 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
                         size: 120,
                       );
                     case ResultState.success:
-                      //jika empry
                       final results = provider.searchResult?.restaurants ?? [];
                       if (results.isEmpty) {
                         return Center(
@@ -90,7 +88,6 @@ class _RestaurantSearchPageState extends State<RestaurantSearchPage> {
 
                     case ResultState.error:
                       return ErrorView(
-                        //ini blum di refactor rootnya !di utils/errorVoew !
                         message: provider.errorMessage.isNotEmpty
                             ? provider.errorMessage
                             : 'Failed to Fetch Data',

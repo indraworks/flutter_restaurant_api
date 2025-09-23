@@ -5,14 +5,11 @@ import '../utils/error_handler.dart';
 import '../models/restaurant_list_response.dart';
 
 class RestaurantSearchProvider extends ChangeNotifier {
-  final RestaurantService _service; //ini field local
-  //yg didalam kurung adlah param dari luar dimasukan
-  //supaay tak warning field local dipakai !
+  final RestaurantService _service;
   RestaurantSearchProvider({required RestaurantService service})
     : _service = service;
 
-  //intinya success brarti kosong krn blm ada yg ontap
-  ResultState _state = ResultState.success; //default idle->success kosong
+  ResultState _state = ResultState.success;
   ResultState get state => _state;
 
   String _errorMessage = '';
@@ -32,7 +29,7 @@ class RestaurantSearchProvider extends ChangeNotifier {
     try {
       _state = ResultState.loading;
       notifyListeners();
-      //field local dipakai agar tak warning
+
       final result = await _service.searchRestaurantsResponse(query);
       if (result.restaurants.isEmpty) {
         _state = ResultState.noData;
@@ -45,13 +42,12 @@ class RestaurantSearchProvider extends ChangeNotifier {
       _state = ResultState.error;
       _errorMessage = mapErrorToMessage(e);
     }
-    notifyListeners(); //  selalu dipanggil
+    notifyListeners();
   }
 
-  //tombol clear search
   void clearSearch() {
     _searchResult = null;
-    _state = ResultState.success; //idle state dgn data kosong
+    _state = ResultState.success;
     _errorMessage = '';
     notifyListeners();
   }

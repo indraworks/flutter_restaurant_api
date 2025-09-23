@@ -19,8 +19,6 @@ class EmptyView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            //jangan pakaikrung kurawal dia tidak bisa
-            //kalau if() {} else {} ini jadai error kalau dalam kalang []
             if (animationAssets != null)
               Lottie.asset(animationAssets!, width: 150)
             else

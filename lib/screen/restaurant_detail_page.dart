@@ -23,27 +23,22 @@ class RestaurantDetailPage extends StatefulWidget {
 }
 
 class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
-  //local field
   final _nameController = TextEditingController();
   final _reviewController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    //begitu masuk halaman detail ->fetch detail dari API
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) {
         context.read<RestaurantDetailProvider>().fetchRestaurantDetail(
           widget.id,
         );
-        // sinkronisasi favorite provider dengan DB <OLD gak perlu>
-        // context.read<FavoriteProvider>().isFavoritrSync(id);
       }
     });
   }
 
-  //dispose
   @override
   void dispose() {
     _nameController.dispose();
@@ -53,7 +48,6 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    //consumer3
     return Consumer3<
       RestaurantDetailProvider,
       RestaurantReviewProvider,
@@ -65,7 +59,6 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
           appBar: AppBar(
             title: const Text('Restaurant Detail'),
             actions: [
-              // ⭐ Icon favorit → sync dengan provider
               if (state == ResultState.success)
                 IconButton(
                   icon: Icon(
@@ -76,21 +69,7 @@ class _RestaurantDetailPageState extends State<RestaurantDetailPage> {
                   color: Colors.red,
                   onPressed: () {
                     final detail = detailProvider.restaurantDetail!.restaurant;
-                    //favoriteProvider.toggleFavorite(detail as Restaurant );
-                    //jadi data restaurantDetail harus dimaping jadi restaurant sebab
-                    //pada db hanya terdiri atas field2 table restaurant saja !
-                    //trus kita bisa utk maping kita buat di constructor saja
-                    //atau dgn extenstion map dari detail ke resto krn field2nya ikut dari resto
-                    //nah karena casenya hanya sdikit kita buat factory constructor saja!
-                    //yaitu di model Restaurant kita buat
-                    /*
-              Kenapa harus mapping?
-Karena tabel favorites di DB hanya butuh field singkat (id, name, city, pictureId, rating) → cocok dengan Restaurant.
-Kalau langsung pakai RestaurantDetail, 
-data yang tidak dipakai DB (menus, reviews, dsb) akan mubazir.
 
-
-                  */
                     //pada contoh dibawah kita tak pakai extendsion helper tapi pakai facatory constructor di resto model
                     final simpleRestaurant = Restaurant.fromDetail(detail);
                     favoriteProvider.toggleFavorite(simpleRestaurant);
@@ -109,7 +88,6 @@ data yang tidak dipakai DB (menus, reviews, dsb) akan mubazir.
 
                 case ResultState.error:
                   return ErrorView(
-                    //ini blum di refactor rootnya !di utils/errorVoew !
                     message: detailProvider.errorMessage,
                     animationAsset: 'assets/animations/error.json',
                     onRetry: () =>
@@ -130,7 +108,6 @@ data yang tidak dipakai DB (menus, reviews, dsb) akan mubazir.
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        //Gambar Restaurant
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: ClipRRect(
@@ -153,7 +130,6 @@ data yang tidak dipakai DB (menus, reviews, dsb) akan mubazir.
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              //Name Resto
                               Text(
                                 detail.name,
                                 style: Theme.of(
@@ -164,7 +140,6 @@ data yang tidak dipakai DB (menus, reviews, dsb) akan mubazir.
                               Text('${detail.city}, ${detail.address}'),
                               SizedBox(height: 8),
 
-                              //Rating
                               Row(
                                 children: [
                                   Icon(
@@ -178,11 +153,9 @@ data yang tidak dipakai DB (menus, reviews, dsb) akan mubazir.
                               ),
                               SizedBox(height: 16),
 
-                              //Description
                               Text(detail.description),
                               const SizedBox(height: 16),
 
-                              //Menu Makanana
                               Text(
                                 "Menu Makanan",
                                 style: Theme.of(context).textTheme.titleMedium,
@@ -195,7 +168,7 @@ data yang tidak dipakai DB (menus, reviews, dsb) akan mubazir.
                                     .toList(),
                               ),
                               SizedBox(height: 16),
-                              //Menu Minuman
+
                               Text(
                                 "Menu Minuman",
                                 style: Theme.of(context).textTheme.titleMedium,
@@ -207,7 +180,7 @@ data yang tidak dipakai DB (menus, reviews, dsb) akan mubazir.
                                     .toList(),
                               ),
                               SizedBox(height: 24),
-                              // Review Section
+
                               ReviewSection(
                                 restaurantId: detail.id,
                                 nameController: _nameController,

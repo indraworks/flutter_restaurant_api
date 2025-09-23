@@ -28,7 +28,6 @@ class ReviewSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         Consumer<RestaurantReviewProvider>(
-          //rp parameter name utk rstaurantreviewprovider
           builder: (context, rp, _) {
             switch (rp.state) {
               case ResultState.loading:
@@ -44,8 +43,7 @@ class ReviewSection extends StatelessWidget {
                   return const Text('No Review Yet..');
                 }
                 return Column(
-                  children: //childrennya gak pake array atau  [] krn hanya 1 saja
-                  reviews.map((r) {
+                  children: reviews.map((r) {
                     return Card(
                       child: ListTile(
                         title: Text(r.name),
@@ -68,12 +66,11 @@ class ReviewSection extends StatelessWidget {
             }
           },
         ),
-        //Bagian Form  tambah Review
+
         SizedBox(height: 24),
         Text('Add Your Review ', style: Theme.of(context).textTheme.titleLarge),
         SizedBox(height: 12),
         TextField(
-          //NAMA
           controller: nameController,
 
           decoration: InputDecoration(
@@ -83,7 +80,6 @@ class ReviewSection extends StatelessWidget {
         ),
         SizedBox(height: 12),
         TextField(
-          //REVIEWNYA
           controller: reviewController,
           maxLines: 3,
           decoration: InputDecoration(
@@ -102,7 +98,7 @@ class ReviewSection extends StatelessWidget {
                 name: name,
                 review: review,
               );
-              //clearkan
+
               nameController.clear();
               reviewController.clear();
             }

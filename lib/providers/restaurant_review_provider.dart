@@ -6,10 +6,7 @@ import '../utils/error_handler.dart';
 
 class RestaurantReviewProvider extends ChangeNotifier {
   final RestaurantService _service;
-  CustomerReviewResponse?
-  _reviewResult; //bisa nama lain variablenya _response terserah kita!
-  //sudah pasti success
-  //yg chgpt suka pakai kata response ,saya pilih _reviewResult;
+  CustomerReviewResponse? _reviewResult;
 
   ResultState _state = ResultState.success;
   String _errorMessage = "";
@@ -17,12 +14,9 @@ class RestaurantReviewProvider extends ChangeNotifier {
   RestaurantReviewProvider({required RestaurantService service})
     : _service = service;
 
-  //getter
   CustomerReviewResponse? get reviewResult => _reviewResult;
   ResultState get state => _state;
   String get errorMessage => _errorMessage;
-
-  //submit new review
 
   Future<void> submitReview({
     required String restaurantId,
@@ -46,7 +40,6 @@ class RestaurantReviewProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  //Inject Existing reviews from detail response
   void setExistingReviews(List<CustomerReview> existing) {
     _reviewResult = CustomerReviewResponse(
       error: false,

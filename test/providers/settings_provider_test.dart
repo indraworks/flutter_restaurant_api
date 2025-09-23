@@ -14,10 +14,9 @@ void main() {
     });
 
     test('default isScheduled = false', () async {
-      SharedPreferences.setMockInitialValues({}); // mock storage kosong
+      SharedPreferences.setMockInitialValues({});
       final provider = SettingsProvider(fakeService);
-      await Future.delayed(Duration.zero); // tunggu async _loadPreferences
-
+      await Future.delayed(Duration.zero);
       expect(provider.isScheduled, false);
     });
 

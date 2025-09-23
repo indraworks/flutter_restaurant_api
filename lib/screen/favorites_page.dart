@@ -77,7 +77,7 @@ class _FavoritesPageState extends State<FavoritesPage> {
                         vertical: 16,
                       ),
                       child: ListTile(
-                        leading: resto.pictureId != null
+                        leading: resto.pictureId != ''
                             ? Image.network(
                                 "https://restaurant-api.dicoding.dev/images/small/${resto.pictureId}",
                                 width: 60,
@@ -107,37 +107,3 @@ class _FavoritesPageState extends State<FavoritesPage> {
     );
   }
 }
-
-/*
-Olf Code :di wraping dengan dismisable yg cardnya nnatinya :
-case ResultState.success:
-              return ListView.builder(
-                itemCount: provider.favorites.length,
-
-                itemBuilder: (context, index) {
-                  final resto = provider.favorites[index];
-                  
-                  return Card(
-                    margin: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-                    child: ListTile(
-                      leading: resto.pictureId != null
-                          ? Image.network(
-                              "https://restaurant-api.dicoding.dev/images/small/${resto.pictureId}",
-                              width: 60,
-                              fit: BoxFit.cover,
-                            )
-                          : Icon(Icons.restaurant),
-                      title: Text(resto.name),
-                      subtitle: Text('${resto.city}• ⭐ ${resto.rating}'),
-                      onTap: () {
-                        Navigator.pushNamed(context, '/detail/${resto.id}');
-                      },
-                    ),
-                  );
-                },
-              );
-
-
-
-
-*/

@@ -12,14 +12,13 @@ class SchedulingProvider extends ChangeNotifier {
   SchedulingProvider(this.schedulingService) {
     _loadFromPrefs();
   }
-  //toggle dari UI
+
   Future<void> toggleScheduling(bool value) async {
     _isScheduled = value;
     notifyListeners();
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(_prefKey, value);
 
-    //jika true
     if (isScheduled) {
       await schedulingService.scheduleDailyReminder();
     } else {
@@ -27,12 +26,10 @@ class SchedulingProvider extends ChangeNotifier {
     }
   }
 
-  //load state ketika app pertama kali dibuka
   Future<void> _loadFromPrefs() async {
     final prefs = await SharedPreferences.getInstance();
     _isScheduled = prefs.getBool(_prefKey) ?? false;
 
-    //jika rersinpan ON ,pastikan scheduling tetap active
     if (_isScheduled) {
       await schedulingService.scheduleDailyReminder();
     }

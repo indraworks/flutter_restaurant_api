@@ -7,7 +7,6 @@ import 'package:restaurant_submit/providers/settings_provider.dart';
 import 'package:restaurant_submit/providers/theme_provider.dart';
 import 'package:restaurant_submit/providers/restaurant_search_provider.dart';
 
-import 'package:restaurant_submit/services/notification_service.dart';
 import 'package:restaurant_submit/services/restaurant_service.dart';
 import 'package:restaurant_submit/providers/restaurant_review_provider.dart';
 import 'package:restaurant_submit/services/scheduling_service.dart';
@@ -17,11 +16,7 @@ import 'package:restaurant_submit/screen/main_page.dart';
 import 'package:restaurant_submit/utils/app_routes.dart';
 
 void main() {
-  //Multiprovider declare & wraping
   final service = RestaurantService();
-
-  //final notifService = NotificationService();
-  //dan untuk notif sesuai dengan punyamu saya ganti ya jadi scheduleSErvice?
 
   runApp(
     MultiProvider(
@@ -54,7 +49,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    //returnnya pilih consumer saja lebih ok!
     return Consumer<ThemeProvider>(
       builder: (context, provider, _) {
         return MaterialApp(
@@ -62,8 +56,7 @@ class MyApp extends StatelessWidget {
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: provider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
-          onGenerateRoute: AppRoutes
-              .generateRoute, //ini menerima function bukan panggil func generateRoute()
+          onGenerateRoute: AppRoutes.generateRoute,
           home: const MainPage(),
         );
       },

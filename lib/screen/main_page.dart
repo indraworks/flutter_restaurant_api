@@ -14,11 +14,11 @@ class _MainPageState extends State<MainPage> {
   int _selectedIndex = 0;
 
   final List<Widget> _pages = const [
-    HomePage(), //daftar restaurant
-    FavoritesPage(), //halaman favorite
-    SettingsPage(), //halaman pengaturan
+    HomePage(),
+    FavoritesPage(),
+    SettingsPage(),
   ];
-  //utk tap mengindek-an tiap page
+
   void _onitemTapped(int index) {
     setState(() {
       _selectedIndex = index;
@@ -28,7 +28,7 @@ class _MainPageState extends State<MainPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_selectedIndex], //halaman active
+      body: _pages[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _selectedIndex,
         onTap: _onitemTapped,

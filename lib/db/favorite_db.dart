@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:restaurant_submit/models/restaurant_model.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
@@ -9,21 +8,18 @@ class FavoriteDb {
 
   FavoriteDb._init();
 
-  //init db
   Future<Database> _initDB(String filepath) async {
     final dbPath = await getDatabasesPath();
     final path = join(dbPath, filepath);
     return await openDatabase(path, version: 1, onCreate: _createDB);
   }
 
-  //get dbnya exist or not
   Future<Database> get database async {
     if (_database != null) return _database!;
     _database = await _initDB('restaurant_app.db');
     return _database!;
   }
 
-  //create db  table if not exist
   Future _createDB(Database db, int version) async {
     await db.execute('''
       CREATE TABLE favorites (
@@ -38,7 +34,6 @@ class FavoriteDb {
       ''');
   }
 
-  //new data /insert
   Future<void> insertFavorite(Map<String, dynamic> data) async {
     final db = await instance.database;
     await db.insert(
@@ -48,20 +43,16 @@ class FavoriteDb {
     );
   }
 
-  //hapus resto dari table favor base id
   Future<int> deleteFavorite(String id) async {
     final db = await instance.database;
     return await db.delete('favorites', where: 'id =?', whereArgs: [id]);
   }
-
-  ///select all
 
   Future<List<Map<String, dynamic>>> getAllFavorites() async {
     final db = await instance.database;
     return await db.query('favorites', orderBy: 'createdAt DESC');
   }
 
-  //Fix logic utk check isFavorite
   Future<bool> isFavorite(String id) async {
     final db = await instance.database;
     final result = await db.query(
@@ -73,7 +64,6 @@ class FavoriteDb {
     return result.isNotEmpty;
   }
 
-  //close
   Future close() async {
     final db = _database;
     if (db != null) {

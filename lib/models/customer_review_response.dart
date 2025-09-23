@@ -18,7 +18,6 @@ class CustomerReview {
   }
 }
 
-//Re
 class CustomerReviewResponse {
   final bool error;
   final String message;

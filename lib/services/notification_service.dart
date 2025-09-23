@@ -1,6 +1,5 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
-import 'package:timezone/data/latest.dart' as tzdata;
 
 class NotificationService {
   static final NotificationService _instance = NotificationService._internal();
@@ -10,7 +9,7 @@ class NotificationService {
 
   static final FlutterLocalNotificationsPlugin
   _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
-  //INIT wajib di panggil di main ()
+
   Future<void> init() async {
     const androidInit = AndroidInitializationSettings('@mipmap/ic_launcher');
     const iosInit = DarwinInitializationSettings();
@@ -23,7 +22,6 @@ class NotificationService {
   }
 
   Future<void> showNotification({
-    //bisa dipanggil dari mana saja
     required int id,
     required String title,
     required String body,
@@ -46,12 +44,9 @@ class NotificationService {
     await _flutterLocalNotificationsPlugin.show(id, title, body, notifDetails);
   }
 
-  //schedule notification (daily)
   Future<void> scheduleDailyAt11() async {
-    //implementation optional utnk jam tertentu!
-    //disini diminta setiap hari jam 11 siang
     final now = tz.TZDateTime.now(tz.local);
-    //Target jam 11 siang hari ini
+
     var scheduledDate = tz.TZDateTime(
       tz.local,
       now.year,
@@ -60,7 +55,7 @@ class NotificationService {
       11,
       0,
     );
-    // Jika sudah lewat jam 11 hari ini → geser ke besok
+
     if (scheduledDate.isBefore(now)) {
       scheduledDate = scheduledDate.add(const Duration(days: 1));
     }
@@ -78,22 +73,18 @@ class NotificationService {
       0,
       'Daily Reminder',
       'Yuk cek restoran favoritmu hari ini!',
-      scheduledDate, // tipe: tz.TZDateTime
+      scheduledDate,
       notificationDetails,
-      androidScheduleMode:
-          AndroidScheduleMode.exactAllowWhileIdle, // WAJIB di v19
-      matchDateTimeComponents:
-          DateTimeComponents.time, // supaya repeat tiap hari jam yg sama
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      matchDateTimeComponents: DateTimeComponents.time,
       payload: null,
     );
   }
 
-  /// Tambahan alias
   Future<void> scheduleDailyReminder() async {
     await scheduleDailyAt11();
   }
 
-  /// Cancel notifikasi (misal toggle off)
   Future<void> cancelAll() async {
     await _flutterLocalNotificationsPlugin.cancelAll();
   }

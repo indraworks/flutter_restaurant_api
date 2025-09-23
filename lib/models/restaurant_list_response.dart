@@ -1,11 +1,5 @@
 import '../models/restaurant_model.dart';
 
-//ini ada List Responsenya !
-//pada service nanti cara ini lebih baik degan wraper langsung jsonya !
-//...............
-// Response wrapper list restaurant
-//...............
-
 class RestaurantListResponse {
   final bool error;
   final String message;
